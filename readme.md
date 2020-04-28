@@ -75,7 +75,7 @@ Créez un formulaire dans `add.php` contenant les champs nécessaires à la cré
 
 ## Exercice 6
 
-Dans `traitement.php` :
+Dans `create.php` :
 - Récupérez les données en POST et composez la requête dans `$request` permettant d'enregistrer un nouvel animal.
 - Exécutez la avec `$bdd->query($request)`.
 - Ensuite, redirigez l'utilisateur vers la page `index.php` grâce à la ligne suivante: 
