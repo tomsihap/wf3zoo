@@ -9,6 +9,16 @@ $animaux = $response->fetchAll(PDO::FETCH_ASSOC);
 
 <main role="main">
 
+    <div id="alertFirstVisit" class="alert alert-success" style="display:none">
+        Bonjour, bienvenue sur ce site pour la première fois !
+    </div>
+
+    <div id="alertHasVisited" class="alert alert-warning" style="display:none">
+        Bonjour, vous êtes de retour sur le site !
+
+        <button id="btnCancelVisit" class="btn btn-sm btn-danger">Ne pas se souvenir de moi !</button>
+    </div>
+
     <?php include 'partials/jumbotron.php' ?>
 
     <div class="album py-5 bg-light">
@@ -65,3 +75,19 @@ $animaux = $response->fetchAll(PDO::FETCH_ASSOC);
 </main>
 
 <?php include 'partials/footer.php' ?>
+
+
+<script>
+    document.getElementById('btnCancelVisit').addEventListener('click', function() {
+        localStorage.setItem('hasVisited', false);
+        document.location.reload();
+    });
+
+
+    if (localStorage.getItem('hasVisited') === 'true') {
+        document.getElementById('alertHasVisited').style = 'display: block';
+    } else {
+        document.getElementById('alertFirstVisit').style = 'display: block';
+        localStorage.setItem('hasVisited', true);
+    }
+</script>

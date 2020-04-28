@@ -83,3 +83,65 @@ Dans `create.php` :
 ```php
 header('Location: index.php');
 ```
+
+## Exercice 7 : améliorer le INSERT en préparant la requête
+
+En utilisant `query()`, on se rend compte que concaténer sa requête avec les paramètres POST est très contraignant ! La requête devient lourde à écrire et est quasiment impossible à maintenir.
+
+Vous allez plutôt utiliser une requête *préparée* pour effectuer l'INSERT. Les requêtes préparées ont deux avantages :
+1. Elles permettent une requête bien plus lisible et naturelle plutôt qu'en utilisant la concaténation
+2. Elles permettent d'*échapper* nos paramètres, c'est à dire de supprimer les caractères spéciaux afin d'éviter que l'utilisateur ne saisisse de requêtes SQL (hein, quoi ? Mon animal ne peut pas s'appeler `Simba'); DROP TABLE Animal; --` [peut être](https://xkcd.com/327/) ? )
+
+Voici le format :
+
+
+### Requête simple (sans paramètres) :
+
+```php
+$request = "SELECT * FROM movies";
+$response = $bdd->prepare($request);
+$response->execute();
+
+$movies = $response->fetchAll(PDO::FETCH_ASSOC);
+```
+
+### Requête paramétrée :
+
+```php
+$request = "SELECT * FROM movies WHERE id = :id";
+$response = $bdd->prepare($request);
+$response->execute([
+    'id' => $_GET['id']
+]);
+
+$movies = $response->fetchAll(PDO::FETCH_ASSOC);
+```
+
+On déchiffre ça :
+
+```php
+
+/**
+ * Dans ma requête, au lieu de concaténer $_GET['id'], je met une "pseudo-variable" nommée :id.
+ * Je peux mettre autant de pseudo-variables que je veux.
+ * Je peux les nommer comme je le souhaite, (:id, ou encore :idMovieChoisi...)
+ */
+$request = "SELECT * FROM movies WHERE id = :id";
+
+/**
+ * Comme ma requête telle qu'elle n'est maintenant plus vraiment valable en MySQL
+ * (à cause des pseudo-variables), je n'exécute plus avec query() mais je prépare mon $bdd
+ * à exécuter la requête.
+ * 
+ * Ça permet à $bdd de s'attendre à recevoir de vraies variables pour remplacer les pseudo-variables.
+ */
+$response = $bdd->prepare($request);
+
+/**
+ * On remplace donc effectivement les pseudo-variables par les vraies variables !
+ */
+$response->execute([
+    'id' => $_GET['id'],
+    'pseudo_variable' => $variable_a_inserer
+]);
+```
