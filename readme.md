@@ -55,3 +55,31 @@ $movies = $response->fetchAll(PDO::FETCH_ASSOC);
 // Quand on récupère 1 seul élément en BDD, on utilise plutôt :
 $movie = $response->fetch(PDO::FETCH_ASSOC);
 ```
+
+## Exercice 5
+
+- Créez les fichiers suivants :
+- `add.php` (il contiendra le formulaire de création d'un animal)
+- `create.php` (il contiendra le traitement du formulaire)
+
+Créez un formulaire dans `add.php` contenant les champs nécessaires à la création d'un animal. Ce formulaire aura la méthode `POST` et l'action `create.php` : 
+
+```php
+<form method="post" action="create.php">
+    // ...
+    <input class="btn btn-primary" type="submit" value="Créer un animal">
+</form>
+```
+
+> *Note* : n'oubliez pas les attributs `name` dans les balises `input`, `textarea` ou `select` !
+
+## Exercice 6
+
+Dans `traitement.php` :
+- Récupérez les données en POST et composez la requête dans `$request` permettant d'enregistrer un nouvel animal.
+- Exécutez la avec `$bdd->query($request)`.
+- Ensuite, redirigez l'utilisateur vers la page `index.php` grâce à la ligne suivante: 
+ 
+```php
+header('Location: index.php');
+```
