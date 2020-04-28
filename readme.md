@@ -94,7 +94,6 @@ Vous allez plutôt utiliser une requête *préparée* pour effectuer l'INSERT. L
 
 Voici le format :
 
-
 ### Requête simple (sans paramètres) :
 
 ```php
