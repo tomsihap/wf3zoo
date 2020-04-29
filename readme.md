@@ -195,3 +195,119 @@ $response->execute([
 4. Lien sur le bouton "Non" : redirection vers la page d'accueil
 5. Lien sur le bouton "Oui" : redirection vers une page `delete.php` en passant la clé `id` contenant en valeur le champ `ID` de l'animal
 6. Dans `delete.php`, traiter la suppression de l'animal
+
+### Exercice 10 : Authentification
+
+> Nous allons créer un mini système d'authentification afin de devoir se loguer pour accéder aux pages modifiantes (insert, update, delete). Le système fonctionnera ainsi :
+
+1. Les pages `index.php` et `show.php` restent publiques
+2. Les pages `create.php`, `add.php`, `update.php`, `edit.php`, `confirmDelete.php`, `delete.php` ne seront accessibles que si je suis connecté.
+
+Il faut donc :
+
+1. Créer une table `User`
+1. Créer un formulaire de création de compte
+2. Créer un formulaire de connexion
+3. Faire comprendre à notre application que l'utilisateur est dans un état `logué` afin de tester l'accès aux pages.
+
+#### 1. Créer la table `User`
+
+Créez la table suivante :
+
+```
+User
+----
+id INT PK AI
+email VARCHAR(70)
+password VARCHAR(150)
+created_at DATETIME DEFAULT=CURRENT_TIMESTAMP
+```
+
+> *Note* : la valeur par défaut `CURRENT_TIMESTAMP` se renseigne lors de la création d'une table avec MySQL et se remplira automatiquement lors d'un `INSERT` avec la date actuelle.
+
+#### 2. Créer un formulaire de création de compte
+
+Dans une page `signUp.php`, créez un formulaire de connexion permettant de renseigner les champs `email` et `password`. 
+
+1. Le formulaire contiendra 3 champs: `email`, `password` et `confirmPassword`.
+2. L'action du formulaire redirigera vers `signUpTraitement.php`.
+3. Dans `signUpTraitement.php` : si les mots de passe sont identiques, insérez le nouvel utilisateur en récupérant les champs `email` et `password` puis affichez `Votre compte a bien été créé !`. Dans le cas contraire, affichez une erreur `Les mots de passe ne correspondent pas.`
+
+#### 3. Créer un formulaire de connexion
+
+1. Dans une page `login.php`, créez un formulaire de connexion permettant de renseigner les champs `email` et `password`.
+2. Dans une page `loginTraitement.php`, faites une requête `SELECT` qui ira chercher un utilisateur avec la clause `WHERE`, en cherchant **à la fois** dans le champ `email` et **à la fois** dans le champ `password`.
+3. Si un utilisateur a été trouvé, affichez à la suite dans `loginTraitement.php` : `Vous êtes bien connecté !`. Sinon, affichez `Erreur d'authentification.`.
+
+#### 4. Faire comprendre à notre application que l'utilisateur est dans un état `logué` afin de tester l'accès aux pages
+
+Pour cela, nous avons besoin de créer une variable qui soit accessible dans toute l'application et qui nous permette de savoir si l'utilisateur est logué ou non ! Pour ce faire, allons utiliser la supergloable `$_SESSION`.
+
+Les variables de sessions sont des variables qui existent pour **chaque visiteur** et qui peuvent être **différentes** entre chaque visiteur. Ce sont des variables qui contiendront des informations propres à la visite : des données à retenir comme un panier, la dernière page visitée, les erreurs de formulaire ou... l'authentification !
+
+Pour activer l'usage des sessions dans PHP, il faut avoir un `session_start()` au début de chaque fichier utilisant les sessions.
+
+> **ATTENTION !!!** Il faut vraiment que ce soit vraiment tout, tout, tout au début !
+
+Pour cela, créez le fichier suivant : `config.php` et mettez dedans :
+
+```php
+<?php
+
+session_start();
+```
+
+Ensuite, dans tous les autres fichiers  de l'application, importez avec `require_once` le fichier `config.php`. Ça y est, les sessions sont activées !
+
+Pour les tester, essayez le code suivant :
+
+Dans `index.php`, n'importe où :
+
+```php
+$_SESSION['essai_session'] = "ça marche !";
+```
+
+Dans n'importe quel autre fichier, par exemple `add.php`, faites un `var_dump($_SESSION)`. La clé `essai_session` devrait apparaître.
+
+> Les sessions sont donc un autre moyen de transmettre des données, cette-fois ci non pas de page en page mais à l'ensemble de l'application sans avoir à préciser à quelle page envoyer les données, là où `$_GET` et `$_POST` ne fonctionnent que de page à page.
+
+Pour mettre pratique, modifiez `loginTraitement.php` et créez une variable de session contenant l'utilisateur :
+
+```php
+$user = $response->fetch(PDO::FETCH_ASSOC);
+$_SESSION['user'] = $user;
+```
+
+Ensuite, dans la navbar: 
+
+1. Testez si `$_SESSION['user']` existe
+2. Si oui, affichez : `Bienvenue user@email.com !` 
+
+
+#### 5. Ajouter des liens de connexion
+
+Sur le même principe, en fonction de si l'utilisateur est logué ou non, affichez les liens suivants :
+
+1. Non connecté (`$_SESSION['user']` n'existe pas) :
+   - "Connectez-vous" (vers `login.php`)
+   - "Créer un compte" (vers `signUp.php`)
+
+2 Connecté : (`$_SESSION['user']` existe) :
+    - "Bienvenue, example@gmail.com !" (avec bien sûr l'email de l'utilisateur)
+    - "Déconnexion" (un lien qui irait vers `logout.php`)
+
+#### 6. Gérer la déconnexion
+
+Dans `logout.php` (n'oubliez pas d'importer `session_start()` dedans aussi), écrivez la ligne suivante :
+
+```php
+session_destroy();
+```
+
+Puis redirigez vers la page d'accueil. `session_destroy()` permet de... détruire la session ! Si tout se passe bien, les liens dans la navbar créés au point (4) ci-dessus, doivent s'afficher tels que l'utilisateur est déconnecté.
+
+### Pistes d'amélioration
+
+#### Débuguer les requêtes avec PDO
+
+#### Hasher les mots de passe
