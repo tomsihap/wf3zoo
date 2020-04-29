@@ -144,3 +144,54 @@ $response->execute([
     'pseudo_variable' => $variable_a_inserer
 ]);
 ```
+
+## Exercice 8 : Créer une page d'édition d'un animal (UPDATE)
+
+1. Créer une page `edit.php`
+2. Dans `index.php`, créer un lien vers `edit.php` en passant la clé `id` contenant en valeur le champ `ID` de l'animal (exactement comme pour `show.php`)
+3. Dans `edit.php`, copiez-collez le formulaire de `add.php`
+4. Préremplissez le formulaire avec les données de l'animal récupérées comme vous le faites dans `show.php`. 
+
+> *Note* - Pour préremplir des champs d'un formulaire HTML :
+
+- Préremplir un champ `input` de formulaire avec l'attribut `value` :
+```html
+<input id="editFormNom" type="text" class="form-control" value="Donnée préremplie">
+```
+
+- Présélectionner un champ `select` de formulaire avec l'attribut `selected` :
+
+```html
+<select name="" id="" class="form-control">
+    <option value="">France</option>
+    <option value="" selected>Allemagne</option>
+</select>
+```
+
+- Précocher un champ `input:checkbox` ou `input:radio` de formulaire avec l'attribut `checked` :
+
+```html
+<label for="checkbox1">Checkbox 1</label>
+<input type="checkbox" name="test" id="checkbox1">
+
+<label for="checkbox">Checkbox 2</label>
+<input type="checkbox" name="test" id="checkbox" checked>
+```
+
+5. Traitez le formulaire dans un nouveau fichier `update.php` en utilisant une requête préparée.
+
+## Exercice 9 : Gérer le DELETE d'un animal
+
+1. Créer une page `confirmDelete.php`
+2. Dans `index.php`, créer un lien vers `confirmDelete.php` en passant la clé `id` contenant en valeur le champ `ID` de l'animal (exactement comme pour `show.php`)
+3. Dans `confirmDelete.php`, récupérez les données de l'animal choisi et ajoutez un texte de confirmation de suppression de l'animal qui doit afficher :
+
+    ```
+    Êtes-vous sûr de vouloir supprimer l'animal *NomDeLanimal* de l'espèce *EspèceDeLanimal* ?
+
+    Oui / Non (boutons)
+    ```
+
+4. Lien sur le bouton "Non" : redirection vers la page d'accueil
+5. Lien sur le bouton "Oui" : redirection vers une page `delete.php` en passant la clé `id` contenant en valeur le champ `ID` de l'animal
+6. Dans `delete.php`, traiter la suppression de l'animal
