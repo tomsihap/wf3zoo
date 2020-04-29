@@ -60,8 +60,23 @@ $animaux = $response->fetchAll(PDO::FETCH_ASSOC);
                                     <div class="btn-group">
                                         <a href="show.php?id=<?= $animal['id'] ?>" class="btn btn-sm btn-primary">Voir</a>
                                         <a href="edit.php?id=<?= $animal['id'] ?>" class="btn btn-sm btn-outline-warning">Éditer</a>
-                                        <a href="#" class="btn btn-sm btn-outline-danger">Supprimer</a>
+                                        <button class="btn btn-sm btn-outline-danger" data-toggle="modal" data-target="#deleteModal-<?= $animal['id'] ?>">Supprimer</button>
                                     </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="deleteModal-<?= $animal['id'] ?>" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-body">
+                                    Êtes-vous sûr de vouloir supprimer <?= $animal['nom'] ?> ?
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Non</button>
+                                    <a href="delete.php?id=<?= $animal['id'] ?>" type="button" class="btn btn-danger">Oui</a>
                                 </div>
                             </div>
                         </div>
