@@ -306,8 +306,106 @@ session_destroy();
 
 Puis redirigez vers la page d'accueil. `session_destroy()` permet de... détruire la session ! Si tout se passe bien, les liens dans la navbar créés au point (4) ci-dessus, doivent s'afficher tels que l'utilisateur est déconnecté.
 
-### Pistes d'amélioration
+### Pistes d'améliorations
 
-#### Débuguer les requêtes avec PDO
+#### PDO : Afficher la requête qu'un prepare/execute a créé afin de la débuguer
 
-#### Hasher les mots de passe
+Une requête préparée est composée de deux éléments :
+1. La requête composée de pseudo-variables
+2. Le tableau de données remplaçant les pseudo-variables
+
+Si on souhaite voir la requête effectivement lue par MySQL, on ne peut var_dump aucun de ces deux éléments ! En effet, le (1) est une pseudo-requête, le (2) n'est qu'une liste de valeurs.
+
+On va utiliser une méthode dédiée au débug des requêtes :
+
+```php
+$statement->debugDumpParams();
+```
+
+Un `var_dump($statement->debugDumpParams());` devrait nous retourner quelque chose comme la string suivante :
+
+```
+SQL: [180] INSERT INTO Animal (espece, nom, taille, poids, date_de_naissance, pays_origine, sexe) VALUES (:espece, :nom, :taille, :poids, :date_de_naissance, :pays_origine, :sexe) Sent SQL: [178] INSERT INTO Animal (espece, nom, taille, poids, date_de_naissance, pays_origine, sexe) VALUES ('ijsdmfj', 'jljselfjlsm', '7689', '67989', '1991-03-23', 'sdjhfs', '0') Params: 7 Key: Name: [7] :espece paramno=-1 name=[7] ":espece" is_param=1 param_type=2 Key: Name: [4] :nom paramno=-1 name=[4] ":nom" is_param=1 param_type=2 Key: Name: [7] :taille paramno=-1 name=[7] ":taille" is_param=1 param_type=2 Key: Name: [6] :poids paramno=-1 name=[6] ":poids" is_param=1 param_type=2 Key: Name: [18] :date_de_naissance paramno=-1 name=[18] ":date_de_naissance" is_param=1 param_type=2 Key: Name: [13] :pays_origine paramno=-1 name=[13] ":pays_origine" is_param=1 param_type=2 Key: Name: [5] :sexe paramno=-1 name=[5] ":sexe" is_param=1 param_type=2
+```
+
+Bien qu'elle soit compliquée à lire, on peut isoler le texte après `Sent SQL:` jusqu'à `Params` qui contient la requête effectivement envoyée à MySQL :
+
+```sql
+INSERT INTO Animal (espece, nom, taille, poids, date_de_naissance, pays_origine, sexe) VALUES ('ijsdmfj', 'jljselfjlsm', '7689', '67989', '1991-03-23', 'sdjhfs', '0')
+```
+
+Et voilà ! Copiez cette requête trouvée dans MySQL Workbench afin de pouvoir l'éditer et la modifier dans l'éditeur Workbench pour pouvoir corriger les erreurs.
+
+#### PDO : Afficher les erreurs dans PDO
+
+Nous allons faire en sorte que PDO nous affiche les erreurs MySQL directement dans les pages en PHP. Lors de la création de `$bdd`, on peut configurer PDO ainsi  :
+
+```php
+$bdd = new PDO('mysql:host=localhost;dbname=wf3zoo;charset=utf8;port=8889', 'root', 'root', [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]);
+```
+
+En ajoutant cet array de paramètres à la fin, PDO nous affichera dorénavant les erreurs SQL d'une requête !
+
+
+#### Gestion d'erreurs : Gérer les exceptions avec try/catch
+
+Gérer les erreurs d'un script va nous permettre de décider ce que l'on fait en cas d'erreur : afficher l'erreur sous une plus jolie forme, rediriger l'utilisateur... Par exemple, nous allons prendre les erreurs de PDO et les afficher dans un `echo` puis terminer le script.
+
+Voici le code de base d'un try/catch :
+
+```php
+try {
+    // code à exécuter
+}
+catch(Exception $e) {
+    echo "Il ya eu une erreur : " . $e->getMessage(); // on affiche le message d'erreur
+    die; // on arrête le script immédiatement
+}
+```
+
+Le bloc `try/catch` ("essaie de faire ce code, sinon attrape l'erreur") nous permet d'avoir une gestion des erreurs qu'un bloc de code pourrait être ammené à emmettre. En l'occurrence, la classe PDO (rappel : `$bdd` est un objet de la classe `PDO`) renvoie des erreurs que nous pouvons attraper et gérer au besoin !
+
+
+```php
+
+try {
+        
+    $request = "INSERT INTO Animal (espece, nom, taille, poids, date_de_naissance, pays_origine, sexe)
+                VALUES (:espece, :nom, :taille, :poids, :date_de_naissance, :pays_origine, :sexe)";
+
+    $response = $bdd->prepare($request);
+
+    $response->execute([
+        'espece'            => $_POST['espece'],
+        'nom'               => $_POST['nom'],
+        'taille'            => $_POST['taille'],
+        'poids'             => $_POST['poids'],
+        'date_de_naissance' => $_POST['date_de_naissance'],
+        'pays_origine'      => $_POST['pays_origine'],
+        'sexe'              => $_POST['sexe'],
+    ]);
+}
+catch(Exception $e) {
+    echo "Il ya eu une erreur : " . $e->getMessage();
+    die;
+}
+
+```
+
+Et voilà : plutôt qu'une erreur en orange avec XDebug, nous avons géré comment afficher l'erreur.
+
+
+
+
+#### Authentification : Bloquer les pages d'ajout, modification, suppression
+
+Dans les pages correspondant aux actions de `INSERT`, `UPDATE`, `DELETE` (donc : `create.php`, `add.php`, `update.php`, `edit.php`, `confirmDelete.php`, `delete.php`), vous allez tester si l'utilisateur est connecté. Si ça n'est pas le cas, redirigez-le en page d'accueil :
+
+```php
+// Si $_SESSION['user'] n'existe PAS (attention au point d'exclamation)
+if (!isset($_SESSION['user'])) {
+    header('Location: index.php');
+}
+```
+
+#### Authentification : Hasher les mots de passe

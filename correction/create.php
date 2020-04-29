@@ -16,4 +16,6 @@ $response->execute([
     'sexe'              => $_POST['sexe'],
 ]);
 
+var_dump($response->debugDumpParams());
+
 // header('Location: index.php');
