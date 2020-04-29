@@ -15,7 +15,7 @@ $animal = $response->fetch(PDO::FETCH_ASSOC);
             <div class="row">
                 <div class="col-md-12">
 
-                        <form action="create.php" method="post">
+                        <form action="create.php" method="post" enctype="multipart/form-data">
 
                             <div class="form-group">
                                 <label for="">Espece</label>
@@ -48,6 +48,11 @@ $animal = $response->fetch(PDO::FETCH_ASSOC);
                                     <option value="1">Male</option>
                                     <option value="2">Indéfini</option>
                                 </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="">Ajouter une image</label>
+                                <input name="image" type="file" class="form-control">
                             </div>
 
                             <input type="submit" class="btn btn-primary" value="Créer l'animal">

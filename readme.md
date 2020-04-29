@@ -25,6 +25,14 @@
     - [Gestion d'erreurs : Gérer les exceptions avec try/catch](#gestion-derreurs--g%c3%a9rer-les-exceptions-avec-trycatch)
     - [Authentification : Bloquer les pages d'ajout, modification, suppression](#authentification--bloquer-les-pages-dajout-modification-suppression)
     - [Authentification : Hasher les mots de passe](#authentification--hasher-les-mots-de-passe)
+    - [Upload de fichiers](#upload-de-fichiers)
+      - [1. Indiquer au formulaire d'accepter l'upload de fichiers](#1-indiquer-au-formulaire-daccepter-lupload-de-fichiers)
+      - [2. Ajouter un champ `input:file`](#2-ajouter-un-champ-inputfile)
+      - [3. Récupérer le fichier uploadé dans le fichier de traitement](#3-r%c3%a9cup%c3%a9rer-le-fichier-upload%c3%a9-dans-le-fichier-de-traitement)
+      - [4. Effectuer les validations éventuelles (taille, format...)](#4-effectuer-les-validations-%c3%a9ventuelles-taille-format)
+      - [5. Effectuer les traitements éventuels (renommer, resizer...)](#5-effectuer-les-traitements-%c3%a9ventuels-renommer-resizer)
+      - [6. Déplacer le fichier de son emplacement temporaire à son emplacement final que l'on aura défini](#6-d%c3%a9placer-le-fichier-de-son-emplacement-temporaire-%c3%a0-son-emplacement-final-que-lon-aura-d%c3%a9fini)
+      - [7. Enregistrer le nom du fichier en base de données avec l'élément auquel on rattache le fichier](#7-enregistrer-le-nom-du-fichier-en-base-de-donn%c3%a9es-avec-l%c3%a9l%c3%a9ment-auquel-on-rattache-le-fichier)
 
 ## Exercice 1
 
@@ -421,8 +429,6 @@ catch(Exception $e) {
 Et voilà : plutôt qu'une erreur en orange avec XDebug, nous avons géré comment afficher l'erreur.
 
 
-
-
 ### Authentification : Bloquer les pages d'ajout, modification, suppression
 
 Dans les pages correspondant aux actions de `INSERT`, `UPDATE`, `DELETE` (donc : `create.php`, `add.php`, `update.php`, `edit.php`, `confirmDelete.php`, `delete.php`), vous allez tester si l'utilisateur est connecté. Si ça n'est pas le cas, redirigez-le en page d'accueil :
@@ -435,3 +441,146 @@ if (!isset($_SESSION['user'])) {
 ```
 
 ### Authentification : Hasher les mots de passe
+
+Pour le moment, nos mots de passe sont visibles en clair dans la base de données, ce qui est loin d'être une bonne chose ! Il suffit que notre base de données se fasse pirater d'une manière ou d'une autre (par des hackers venus de l'extérieur ou simplement des personnes ayant accès à la base de données) pour voir les mots de passes de tous nos utilisateurs dans la nature. Et ça n'arrive pas qu'aux autres ! Des grands noms comme Sony, Dropbox, Nintendo, Adobe ([une bonne liste ici](https://haveibeenpwned.com/PwnedWebsites)) se font hacker, personne n'est donc à l'abri. Par contre, on peut limiter les dégâts en protégeant les données sensibles comme les mots de passe.
+
+> Vous pouvez vérifier si une de vos adresses e-mail se trouve dans des listes de comptes hackés sur le site [Have I Been Pwned](https://haveibeenpwned.com/).
+
+Concrètement, l'idée est de hasher nos mots de passe, c'est à dire de les transformer grâce à un algorithme choisie en une chaîne de caractère indéchiffrable dans l'autre sens. Par exemple, avec SHA-2, [un algorithme à l'origine concu par la NSA](https://fr.wikipedia.org/wiki/SHA-2) :
+
+
+Mot de passe | Hash en SHA 512
+---------|----------
+ `bonjour` | `3041edbcdd46190c0acc504ed195f8a90129efcab173a7b9ac4646b92d04cc80005acaa3554f4b1df839eacadc2491cb623bf3aa6f9eb44f6ea8ca005821d25d`
+ `Bonjour` | `c447dff0d671f62ad580b255b64f7a8f6a30d1b828569cee08b7c861239f8d4856ef38a1166718b045a9713876336c1f623619f6a78fc891d48d0b98c703def3`
+ `BONJOUR` | `c65afee89066dfe6d50ee8b9d4d95f6f26fe7a9395e5791cd15076a67d1725fb6f9fe30d8e27d1be1fc0c1cc3bf3b584a327443eaf330e3c05676520149f3683`
+
+On remarque qu'en plus de n'avoir aucun moyen de repasser du mot de passe hashé au mot de passe d'origine, on ne peut pas non plus faire d'analyse de fréquence sur les mots de passe hashés (c'est à dire, comparer les récurrences afin de dire quelque chose comme "`8a90129e` correspond à la lettre A" ).
+
+En pratique :
+
+1. **Création de compte :** L'utilisateur va tapper son mot de passe comme habituellement. Par contre, à l'enregistrement, on passera le mot de passe dans `password_hash()` pour le INSERT.
+2. **Login :** L'utilisateur va tapper son mot de passe comme habituellement. Par contre, à la lecture, on utilisera `password_verify()` qui comparera le mot de passe saisi et la version hashée.
+
+Pour mettre en place cela :
+
+1. Changez dans le `execute()` qui gère l'`INSERT INTO User`, la ligne "password" de la façon suivante :
+
+    ```php
+    "password" => password_hash($_POST["password"]),
+    ```
+
+
+2. Changez le `SELECT * FROM Users WHERE...` qui récupère le user de la façon suivante :
+
+    ```sql
+    SELECT * FROM User WHERE email = :email
+    ```
+
+    - En effet, nous n'allons chercher que par e-mail dorénavant.
+
+    - Ensuite, vérifiez si l'utilisateur a saisi un bon mot de passe grâce à :
+
+    ```php
+
+    $user = $response->fetch(PDO::FETCH_ASSOC);
+
+    if ( password_verify($_POST['user'], $user['password']) ) {
+        // l'utilisateur est connecté
+    } 
+    ```
+
+Et voilà !
+
+### Upload de fichiers
+
+Pour uploader un fichier, on va :
+1. Indiquer au formulaire d'accepter l'upload de fichiers
+2. Ajouter un champ `input:file`
+3. Récupérer le fichier uploadé dans le fichier de traitement
+4. Effectuer les validations éventuelles (taille, format...)
+5. Effectuer les traitements éventuels (renommer, resizer...)
+6. Déplacer le fichier de son emplacement temporaire à son emplacement final que l'on aura défini
+7. Enregistrer le nom du fichier en base de données avec l'élément auquel on rattache le fichier
+
+#### 1. Indiquer au formulaire d'accepter l'upload de fichiers
+
+Modifiez le formulaire en rajoutant l'attribut `enctype` :
+
+```html
+<form action="" method="" enctype="multipart/form-data">
+```
+
+#### 2. Ajouter un champ `input:file`
+
+```html
+<input type="file" name="photo_animal">
+```
+
+#### 3. Récupérer le fichier uploadé dans le fichier de traitement
+
+```php
+// Les fichiers issus des champs input:file d'un formulaire avec enctype="multipart/form-data" se retrouvent dans $_FILES :
+
+var_dump($_FILES);
+
+// Notre fichier se retrouve dans :
+$_FILES['photo_animal']
+```
+
+#### 4. Effectuer les validations éventuelles (taille, format...)
+
+On peut avoir des informations sur le fichier grâce à :
+
+```php
+$photoAnimal = $_FILES['photo_animal'];
+
+$tailleDuFichier = $photoAnimal['size']; //
+
+$pathinfoData = pathinfo($photoAnimal);
+
+$nomDuFichier = $pathinfoData['filename'];
+$extensionDuFichier = $pathinfoData['extension'];
+```
+
+Grâce à ces informations-là, vous pouvez valider si l'extension est valide, si la taille est valide, si le nom de fichier est valide...
+
+#### 5. Effectuer les traitements éventuels (renommer, resizer...)
+
+Pour être certains d'avoir des noms de fichiers uniques, nous allons renommer nos fichiers de la façon suivante grâce à la fonction PHP `uniqid()` :
+
+```
+NOM_DU_FICHIER-ID_UNIQUE.EXTENSION
+```
+
+Ce qui transformerait `Simba.png` en `Simba-84d3fgj3d.png` :
+
+```php
+$photoAnimal = $_FILES['photo_animal']; // on récupère le fichier
+$pathinfoData = pathinfo($photoAnimal); // on récupère les infos du chemin du fichier
+$nomDuFichier = $pathinfoData['filename']; // on récupère le nom de fichier 
+$extensionDuFichier = $pathinfoData['extension']; // on récupère l'extension du fichier
+$nouveauNomDuFichier = $nomDuFichier . '-' . uniqid() . '.' . $extensionDuFichier; // on compose  le nouveau nom
+```
+
+#### 6. Déplacer le fichier de son emplacement temporaire à son emplacement final que l'on aura défini
+
+Le fichier est pour le moment dans un emplacement temporaire (`$_FILES['photo_animal']['tmp_name']`). Déplaçons-le dans le dossier `uploads` de notre projet, et donnons-lui le nouveau nom :
+
+```php
+move_uploaded_file($photoAnimal['tmp_name'],  __DIR__  . '/uploads/' . $nouveauNomDuFichier );
+```
+
+> *Note* : La constante magique `__DIR__` permet d'avoir le chemin absolu vers le fichier qui est en train d'exécuter le script. C'est très utile pour gérer les chemins de fichiers en PHP et savoir où on en est !
+
+#### 7. Enregistrer le nom du fichier en base de données avec l'élément auquel on rattache le fichier
+
+- Modifiez votre base de données et ajoutez un champ `file VARCHAR(50)`.
+- Modifiez l'`INSERT` d'origine et ajoutez le nouveau champ. Modifiez également le `execute()` :
+
+```php
+execute([
+    //...
+    'file' => $nouveauNomDeFichier,
+])
+```

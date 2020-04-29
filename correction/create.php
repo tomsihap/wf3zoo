@@ -1,8 +1,17 @@
 <?php
 require 'config/db.php';
 
-$request = "INSERT INTO Animal (espece, nom, taille, poids, date_de_naissance, pays_origine, sexe)
-            VALUES (:espece, :nom, :taille, :poids, :date_de_naissance, :pays_origine, :sexe)";
+$photo = $_FILES['image'];
+
+$nomDuFichier = pathinfo($photo['name'])['filename'];
+$extensionDuFichier = pathinfo($photo['name'])['extension'];
+$nouveauNomDuFichier =  $nomDuFichier . '-' . uniqid() . '.' . $extensionDuFichier;
+
+move_uploaded_file($photo['tmp_name'],  __DIR__  . '/uploads/' . $nouveauNomDuFichier );
+
+
+$request = "INSERT INTO Animal (espece, nom, taille, poids, date_de_naissance, pays_origine, sexe, photo)
+            VALUES (:espece, :nom, :taille, :poids, :date_de_naissance, :pays_origine, :sexe, :photo)";
 
 $response = $bdd->prepare($request);
 
@@ -14,8 +23,7 @@ $response->execute([
     'date_de_naissance' => $_POST['date_de_naissance'],
     'pays_origine'      => $_POST['pays_origine'],
     'sexe'              => $_POST['sexe'],
+    'photo'             => $nouveauNomDuFichier
 ]);
 
-var_dump($response->debugDumpParams());
-
-// header('Location: index.php');
+header('Location: index.php');
