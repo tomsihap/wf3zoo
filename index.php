@@ -1,5 +1,6 @@
 <?php
-$bdd = new PDO('mysql:host=localhost;dbname=wf3zoo;charset=utf8;port=8889', 'root', 'root');
+require 'config/db.php';
+
 $request = "SELECT * FROM animal";
 $response = $bdd->query($request);
 $animaux = $response->fetchAll(PDO::FETCH_ASSOC);
@@ -58,6 +59,7 @@ $animaux = $response->fetchAll(PDO::FETCH_ASSOC);
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
                                         <a href="show.php?id=<?= $animal['id'] ?>" class="btn btn-sm btn-outline-secondary">Voir la fiche de l'animal</a>
+                                        <a href="edit.php?id=<?= $animal['id'] ?>" class="btn btn-sm btn-outline-secondary">Éditer la fiche de l'animal</a>
                                     </div>
                                     <small class="text-muted">9 mins</small>
                                 </div>

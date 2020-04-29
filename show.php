@@ -1,6 +1,7 @@
 <?php
-$bdd = new PDO('mysql:host=localhost;dbname=wf3zoo;charset=utf8;port=8889', 'root', 'root');
-$request = "SELECT * FROM animal";
+require 'config/db.php';
+
+$request = "SELECT * FROM animal WHERE id = " . $_GET['id'];
 $response = $bdd->query($request);
 $animal = $response->fetch(PDO::FETCH_ASSOC);
 ?>
@@ -16,7 +17,10 @@ $animal = $response->fetch(PDO::FETCH_ASSOC);
                 <div class="col-md-12">
                     <div class="card mb-4 shadow-sm">
                         <div class="card-body">
-                            <p class="card-text"><?= $animal['nom'] ?> de l'espèce <?= $animal['espece'] ?></p>
+                            <h1><?= $animal['nom'] ?></h1>
+                            <p class="card-text">
+                                <?= $animal['nom'] ?> de l'espèce <?= $animal['espece'] ?>
+                            </p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
                                     <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
