@@ -12,19 +12,19 @@
     - [Requête paramétrée :](#requ%c3%aate-param%c3%a9tr%c3%a9e)
   - [Exercice 8 : Créer une page d'édition d'un animal (UPDATE)](#exercice-8--cr%c3%a9er-une-page-d%c3%a9dition-dun-animal-update)
   - [Exercice 9 : Gérer le DELETE d'un animal](#exercice-9--g%c3%a9rer-le-delete-dun-animal)
-    - [Exercice 10 : Authentification](#exercice-10--authentification)
-      - [1. Créer la table `User`](#1-cr%c3%a9er-la-table-user)
-      - [2. Créer un formulaire de création de compte](#2-cr%c3%a9er-un-formulaire-de-cr%c3%a9ation-de-compte)
-      - [3. Créer un formulaire de connexion](#3-cr%c3%a9er-un-formulaire-de-connexion)
-      - [4. Faire comprendre à notre application que l'utilisateur est dans un état `logué` afin de tester l'accès aux pages](#4-faire-comprendre-%c3%a0-notre-application-que-lutilisateur-est-dans-un-%c3%a9tat-logu%c3%a9-afin-de-tester-lacc%c3%a8s-aux-pages)
-      - [5. Ajouter des liens de connexion](#5-ajouter-des-liens-de-connexion)
-      - [6. Gérer la déconnexion](#6-g%c3%a9rer-la-d%c3%a9connexion)
-    - [Pistes d'améliorations](#pistes-dam%c3%a9liorations)
-      - [PDO : Afficher la requête qu'un prepare/execute a créé afin de la débuguer](#pdo--afficher-la-requ%c3%aate-quun-prepareexecute-a-cr%c3%a9%c3%a9-afin-de-la-d%c3%a9buguer)
-      - [PDO : Afficher les erreurs dans PDO](#pdo--afficher-les-erreurs-dans-pdo)
-      - [Gestion d'erreurs : Gérer les exceptions avec try/catch](#gestion-derreurs--g%c3%a9rer-les-exceptions-avec-trycatch)
-      - [Authentification : Bloquer les pages d'ajout, modification, suppression](#authentification--bloquer-les-pages-dajout-modification-suppression)
-      - [Authentification : Hasher les mots de passe](#authentification--hasher-les-mots-de-passe)
+  - [Exercice 10 : Authentification](#exercice-10--authentification)
+    - [1. Créer la table `User`](#1-cr%c3%a9er-la-table-user)
+    - [2. Créer un formulaire de création de compte](#2-cr%c3%a9er-un-formulaire-de-cr%c3%a9ation-de-compte)
+    - [3. Créer un formulaire de connexion](#3-cr%c3%a9er-un-formulaire-de-connexion)
+    - [4. Faire comprendre à notre application que l'utilisateur est dans un état `logué` afin de tester l'accès aux pages](#4-faire-comprendre-%c3%a0-notre-application-que-lutilisateur-est-dans-un-%c3%a9tat-logu%c3%a9-afin-de-tester-lacc%c3%a8s-aux-pages)
+    - [5. Ajouter des liens de connexion](#5-ajouter-des-liens-de-connexion)
+    - [6. Gérer la déconnexion](#6-g%c3%a9rer-la-d%c3%a9connexion)
+  - [Pistes d'améliorations](#pistes-dam%c3%a9liorations)
+    - [PDO : Afficher la requête qu'un prepare/execute a créé afin de la débuguer](#pdo--afficher-la-requ%c3%aate-quun-prepareexecute-a-cr%c3%a9%c3%a9-afin-de-la-d%c3%a9buguer)
+    - [PDO : Afficher les erreurs dans PDO](#pdo--afficher-les-erreurs-dans-pdo)
+    - [Gestion d'erreurs : Gérer les exceptions avec try/catch](#gestion-derreurs--g%c3%a9rer-les-exceptions-avec-trycatch)
+    - [Authentification : Bloquer les pages d'ajout, modification, suppression](#authentification--bloquer-les-pages-dajout-modification-suppression)
+    - [Authentification : Hasher les mots de passe](#authentification--hasher-les-mots-de-passe)
 
 ## Exercice 1
 
@@ -222,7 +222,7 @@ $response->execute([
 5. Lien sur le bouton "Oui" : redirection vers une page `delete.php` en passant la clé `id` contenant en valeur le champ `ID` de l'animal
 6. Dans `delete.php`, traiter la suppression de l'animal
 
-### Exercice 10 : Authentification
+## Exercice 10 : Authentification
 
 > Nous allons créer un mini système d'authentification afin de devoir se loguer pour accéder aux pages modifiantes (insert, update, delete). Le système fonctionnera ainsi :
 
@@ -236,7 +236,7 @@ Il faut donc :
 2. Créer un formulaire de connexion
 3. Faire comprendre à notre application que l'utilisateur est dans un état `logué` afin de tester l'accès aux pages.
 
-#### 1. Créer la table `User`
+### 1. Créer la table `User`
 
 Créez la table suivante :
 
@@ -251,7 +251,7 @@ created_at DATETIME DEFAULT=CURRENT_TIMESTAMP
 
 > *Note* : la valeur par défaut `CURRENT_TIMESTAMP` se renseigne lors de la création d'une table avec MySQL et se remplira automatiquement lors d'un `INSERT` avec la date actuelle.
 
-#### 2. Créer un formulaire de création de compte
+### 2. Créer un formulaire de création de compte
 
 Dans une page `signUp.php`, créez un formulaire de connexion permettant de renseigner les champs `email` et `password`. 
 
@@ -259,13 +259,13 @@ Dans une page `signUp.php`, créez un formulaire de connexion permettant de rens
 2. L'action du formulaire redirigera vers `signUpTraitement.php`.
 3. Dans `signUpTraitement.php` : si les mots de passe sont identiques, insérez le nouvel utilisateur en récupérant les champs `email` et `password` puis affichez `Votre compte a bien été créé !`. Dans le cas contraire, affichez une erreur `Les mots de passe ne correspondent pas.`
 
-#### 3. Créer un formulaire de connexion
+### 3. Créer un formulaire de connexion
 
 1. Dans une page `login.php`, créez un formulaire de connexion permettant de renseigner les champs `email` et `password`.
 2. Dans une page `loginTraitement.php`, faites une requête `SELECT` qui ira chercher un utilisateur avec la clause `WHERE`, en cherchant **à la fois** dans le champ `email` et **à la fois** dans le champ `password`.
 3. Si un utilisateur a été trouvé, affichez à la suite dans `loginTraitement.php` : `Vous êtes bien connecté !`. Sinon, affichez `Erreur d'authentification.`.
 
-#### 4. Faire comprendre à notre application que l'utilisateur est dans un état `logué` afin de tester l'accès aux pages
+### 4. Faire comprendre à notre application que l'utilisateur est dans un état `logué` afin de tester l'accès aux pages
 
 Pour cela, nous avons besoin de créer une variable qui soit accessible dans toute l'application et qui nous permette de savoir si l'utilisateur est logué ou non ! Pour ce faire, allons utiliser la supergloable `$_SESSION`.
 
@@ -310,7 +310,7 @@ Ensuite, dans la navbar:
 2. Si oui, affichez : `Bienvenue user@email.com !` 
 
 
-#### 5. Ajouter des liens de connexion
+### 5. Ajouter des liens de connexion
 
 Sur le même principe, en fonction de si l'utilisateur est logué ou non, affichez les liens suivants :
 
@@ -322,7 +322,7 @@ Sur le même principe, en fonction de si l'utilisateur est logué ou non, affich
     - "Bienvenue, example@gmail.com !" (avec bien sûr l'email de l'utilisateur)
     - "Déconnexion" (un lien qui irait vers `logout.php`)
 
-#### 6. Gérer la déconnexion
+### 6. Gérer la déconnexion
 
 Dans `logout.php` (n'oubliez pas d'importer `session_start()` dedans aussi), écrivez la ligne suivante :
 
@@ -332,9 +332,9 @@ session_destroy();
 
 Puis redirigez vers la page d'accueil. `session_destroy()` permet de... détruire la session ! Si tout se passe bien, les liens dans la navbar créés au point (4) ci-dessus, doivent s'afficher tels que l'utilisateur est déconnecté.
 
-### Pistes d'améliorations
+## Pistes d'améliorations
 
-#### PDO : Afficher la requête qu'un prepare/execute a créé afin de la débuguer
+### PDO : Afficher la requête qu'un prepare/execute a créé afin de la débuguer
 
 Une requête préparée est composée de deux éléments :
 1. La requête composée de pseudo-variables
@@ -362,7 +362,7 @@ INSERT INTO Animal (espece, nom, taille, poids, date_de_naissance, pays_origine,
 
 Et voilà ! Copiez cette requête trouvée dans MySQL Workbench afin de pouvoir l'éditer et la modifier dans l'éditeur Workbench pour pouvoir corriger les erreurs.
 
-#### PDO : Afficher les erreurs dans PDO
+### PDO : Afficher les erreurs dans PDO
 
 Nous allons faire en sorte que PDO nous affiche les erreurs MySQL directement dans les pages en PHP. Lors de la création de `$bdd`, on peut configurer PDO ainsi  :
 
@@ -373,7 +373,7 @@ $bdd = new PDO('mysql:host=localhost;dbname=wf3zoo;charset=utf8;port=8889', 'roo
 En ajoutant cet array de paramètres à la fin, PDO nous affichera dorénavant les erreurs SQL d'une requête !
 
 
-#### Gestion d'erreurs : Gérer les exceptions avec try/catch
+### Gestion d'erreurs : Gérer les exceptions avec try/catch
 
 Gérer les erreurs d'un script va nous permettre de décider ce que l'on fait en cas d'erreur : afficher l'erreur sous une plus jolie forme, rediriger l'utilisateur... Par exemple, nous allons prendre les erreurs de PDO et les afficher dans un `echo` puis terminer le script.
 
@@ -423,7 +423,7 @@ Et voilà : plutôt qu'une erreur en orange avec XDebug, nous avons géré comme
 
 
 
-#### Authentification : Bloquer les pages d'ajout, modification, suppression
+### Authentification : Bloquer les pages d'ajout, modification, suppression
 
 Dans les pages correspondant aux actions de `INSERT`, `UPDATE`, `DELETE` (donc : `create.php`, `add.php`, `update.php`, `edit.php`, `confirmDelete.php`, `delete.php`), vous allez tester si l'utilisateur est connecté. Si ça n'est pas le cas, redirigez-le en page d'accueil :
 
@@ -434,4 +434,4 @@ if (!isset($_SESSION['user'])) {
 }
 ```
 
-#### Authentification : Hasher les mots de passe
+### Authentification : Hasher les mots de passe
