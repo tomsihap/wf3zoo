@@ -1,5 +1,31 @@
 # TP : WF3 Zoo
 
+- [TP : WF3 Zoo](#tp--wf3-zoo)
+  - [Exercice 1](#exercice-1)
+  - [Exercice 2](#exercice-2)
+  - [Exercice 3](#exercice-3)
+  - [Exercice 4](#exercice-4)
+  - [Exercice 5](#exercice-5)
+  - [Exercice 6](#exercice-6)
+  - [Exercice 7 : améliorer le INSERT en préparant la requête](#exercice-7--am%c3%a9liorer-le-insert-en-pr%c3%a9parant-la-requ%c3%aate)
+    - [Requête simple (sans paramètres) :](#requ%c3%aate-simple-sans-param%c3%a8tres)
+    - [Requête paramétrée :](#requ%c3%aate-param%c3%a9tr%c3%a9e)
+  - [Exercice 8 : Créer une page d'édition d'un animal (UPDATE)](#exercice-8--cr%c3%a9er-une-page-d%c3%a9dition-dun-animal-update)
+  - [Exercice 9 : Gérer le DELETE d'un animal](#exercice-9--g%c3%a9rer-le-delete-dun-animal)
+    - [Exercice 10 : Authentification](#exercice-10--authentification)
+      - [1. Créer la table `User`](#1-cr%c3%a9er-la-table-user)
+      - [2. Créer un formulaire de création de compte](#2-cr%c3%a9er-un-formulaire-de-cr%c3%a9ation-de-compte)
+      - [3. Créer un formulaire de connexion](#3-cr%c3%a9er-un-formulaire-de-connexion)
+      - [4. Faire comprendre à notre application que l'utilisateur est dans un état `logué` afin de tester l'accès aux pages](#4-faire-comprendre-%c3%a0-notre-application-que-lutilisateur-est-dans-un-%c3%a9tat-logu%c3%a9-afin-de-tester-lacc%c3%a8s-aux-pages)
+      - [5. Ajouter des liens de connexion](#5-ajouter-des-liens-de-connexion)
+      - [6. Gérer la déconnexion](#6-g%c3%a9rer-la-d%c3%a9connexion)
+    - [Pistes d'améliorations](#pistes-dam%c3%a9liorations)
+      - [PDO : Afficher la requête qu'un prepare/execute a créé afin de la débuguer](#pdo--afficher-la-requ%c3%aate-quun-prepareexecute-a-cr%c3%a9%c3%a9-afin-de-la-d%c3%a9buguer)
+      - [PDO : Afficher les erreurs dans PDO](#pdo--afficher-les-erreurs-dans-pdo)
+      - [Gestion d'erreurs : Gérer les exceptions avec try/catch](#gestion-derreurs--g%c3%a9rer-les-exceptions-avec-trycatch)
+      - [Authentification : Bloquer les pages d'ajout, modification, suppression](#authentification--bloquer-les-pages-dajout-modification-suppression)
+      - [Authentification : Hasher les mots de passe](#authentification--hasher-les-mots-de-passe)
+
 ## Exercice 1
 
 Faire le découpage du template en "partials" qui seront inclus dans les pages `index.php` et `show.php` grâce à `include()`. Le découpage sera le suivant :
