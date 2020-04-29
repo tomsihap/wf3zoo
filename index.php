@@ -58,10 +58,10 @@ $animaux = $response->fetchAll(PDO::FETCH_ASSOC);
                                 </p>
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="btn-group">
-                                        <a href="show.php?id=<?= $animal['id'] ?>" class="btn btn-sm btn-outline-secondary">Voir la fiche de l'animal</a>
-                                        <a href="edit.php?id=<?= $animal['id'] ?>" class="btn btn-sm btn-outline-secondary">Éditer la fiche de l'animal</a>
+                                        <a href="show.php?id=<?= $animal['id'] ?>" class="btn btn-sm btn-primary">Voir</a>
+                                        <a href="edit.php?id=<?= $animal['id'] ?>" class="btn btn-sm btn-outline-warning">Éditer</a>
+                                        <a href="#" class="btn btn-sm btn-outline-danger">Supprimer</a>
                                     </div>
-                                    <small class="text-muted">9 mins</small>
                                 </div>
                             </div>
                         </div>

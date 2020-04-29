@@ -16,4 +16,4 @@ $response->execute([
     'sexe'              => $_POST['sexe'],
 ]);
 
-//header('Location: index.php');
+// header('Location: index.php');
